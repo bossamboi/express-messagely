@@ -40,12 +40,6 @@ describe("User Routes Test", function () {
 			body: "test1 to test2 FIRST",
 		});
 
-		let m2 = await Message.create({
-			from_username: "test1",
-			to_username: "test2",
-			body: "test1 to test2 SECOND",
-		});
-
 		const u1User = { username: "test1" };
 		const u2User = { username: "test2" };
 		u1Token = jwt.sign(u1User, SECRET_KEY);
@@ -110,11 +104,71 @@ describe("User Routes Test", function () {
 
 	/** GET users/:username/to */
 
-	describe("GET users/:username/to", function () {});
+	describe("GET users/:username/to", function () {
+		test("Can get messages to user", async function () {
+			let response = await request(app)
+				.get("/users/test2/to")
+				.send({ _token: u2Token });
+
+			response.body.messages[0].sent_at = new Date(response.body.messages[0].sent_at);
+
+			expect(response.body).toEqual({
+				messages: [{
+					id: expect.any(Number),
+					body: "test1 to test2 FIRST",
+					sent_at: expect.any(Date),
+					read_at: null,
+					from_user: {
+						username: "test1",
+						first_name: "Test1",
+						last_name: "Testy1",
+						phone: "+1111111111"
+					}
+				}]
+			});
+		});
+
+		test("wont get messages if different user logged in", async function () {
+			let response = await request(app)
+				.get("/users/test2/to")
+				.send({ _token: u1Token });
+			expect(response.statusCode).toEqual(401);
+		});
+	});
 
 	/** GET users/:username/from */
 
-	describe("GET users/:username/from", function () {});
+	describe("GET users/:username/from", function () {
+		test("Can get from messages for user", async function () {
+			let response = await request(app)
+				.get("/users/test1/from")
+				.send({ _token: u1Token });
+
+			response.body.messages[0].sent_at = new Date(response.body.messages[0].sent_at);
+
+			expect(response.body).toEqual({
+				messages: [{
+					id: expect.any(Number),
+					body: "test1 to test2 FIRST",
+					sent_at: expect.any(Date),
+					read_at: null,
+					to_user: {
+						username: "test2",
+						first_name: "Test2",
+						last_name: "Testy2",
+						phone: "+2222222222"
+					}
+				}]
+			});
+		});
+
+		test("wont get messages if different user logged in", async function () {
+			let response = await request(app)
+				.get("/users/test1/from")
+				.send({ _token: u2Token });
+			expect(response.statusCode).toEqual(401);
+		});
+	});
 });
 
 afterAll(async function () {

@@ -26,11 +26,6 @@ router.get('/:username', ensureCorrectUser, async function (req, res) {
   const user = await User.get(req.params.username);
   return res.json({ user });
 })
-//test
-// "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3QiLCJpYXQiOjE2NTAzMjQ0OTF9.Bk2dirbF7soR3RZMFfk-WxVQtnhkk3M0g5-eaC-F8mI"
-// test2
-// "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3QyIiwiaWF0IjoxNjUwMzI0NDQ3fQ.Cv7QtBi4fGIrA9fiGRnzmbYk0AAnQ02QNNpQPgOh2JY"
-
 
 /** GET /:username/to - get messages to user
  *
