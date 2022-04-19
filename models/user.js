@@ -36,7 +36,7 @@ class User {
 		const user = result.rows[0];
 
 		if (user) {
-			return await bcrypt.compare(password, user.password);
+			return (await bcrypt.compare(password, user.password) === true);
 		}
 		return false;
 	}
@@ -56,7 +56,7 @@ class User {
 
 	static async all() {
 		const results = await db.query(
-			`SELECT username, first_name, last_name 
+			`SELECT username, first_name, last_name
         FROM users`
 		);
 		return results.rows;
@@ -73,12 +73,12 @@ class User {
 
 	static async get(username) {
 		const result = await db.query(
-			`SELECT username, 
-              first_name, 
+			`SELECT username,
+              first_name,
               last_name,
               phone,
               join_at,
-              last_login_at 
+              last_login_at
         FROM users
         WHERE username = $1`,
 			[username]
